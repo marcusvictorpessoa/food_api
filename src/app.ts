@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from "dotenv";
 
 dotenv.config();
-const DB_PATH: string = process.env.DB_PATH || '';
+const DB_PATH = process.env.DB_PATH || '';
 
 const app = express();
 
