@@ -9,7 +9,7 @@
 ### 2° - Com o docker instalado execute o comando:
     docker run --name mongo-food-api -d -p 27017:27017 mongo:latest
 
-### 3° - Utilize o arquivo .env.example como referencia e crie o arquivo .env
+### 3° - Utilize o arquivo .env.example como referencia e crie o arquivo .env na pasta src
 
 ### 4° - Em seguida execute os comandos para popular o banco de dados:
     npm run seeder --archive=User.seeder.ts
