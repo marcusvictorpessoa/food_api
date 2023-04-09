@@ -10,14 +10,18 @@ class CategoryController {
         try {
 
             const limit = Number(request.query['limit']) || 10;
+            const page = Number(request.query['page']) || 1;
+
+            const skip = (page - 1) * limit;
 
             const count = await Category.find().count()
 
-            const categories = await Category.find().limit(limit);
+            const categories = await Category.find().populate('parent').limit(limit).skip(skip);
 
 
             return response.status(200).json({
                 total: count,
+                page: page,
                 categories
             });
 
