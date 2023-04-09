@@ -4,9 +4,11 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 
 dotenv.config();
-const DB_PATH = process.env.DB_PATH || '';
 
-const categories = [
+const DB_PATH: string = process.env.DB_PATH!;
+
+
+const parents = [
     {
         name: "Brasileiras",
         parent: null
@@ -29,6 +31,17 @@ const categories = [
     },
 ];
 
+const categories = [
+    {
+        name: "Salgados Brasileiros",
+        parent: ""
+    },
+    {
+        name: "Doces Brasileiros",
+        parent: ""
+    }
+]
+
 //connect mongoose
 mongoose
     .connect(DB_PATH)
@@ -42,6 +55,11 @@ mongoose
 
 const createCategories = async () => {
 
+    await Category.insertMany(parents);
+    const categoryBrazil = await Category.findOne({ name: "Brasileiras" });
+    categories.forEach((category) => {
+        category.parent = categoryBrazil?.id
+    });
     await Category.insertMany(categories);
 
     mongoose.disconnect();
