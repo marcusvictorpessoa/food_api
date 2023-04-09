@@ -2,14 +2,25 @@
 import { Request, Response } from "express";
 import User from "../models/User.models";
 import jwt from "jsonwebtoken";
-
-const SECRET = process.env.SECRET || "B7B6E15ED1459F578C31B16DD42FD";
+import { env } from "../environment";
 
 class AuthController {
 
     async login(request: Request, response: Response) {
 
         const { email, password } = request.body;
+
+        if(email === null || email === ""){
+            return response.status(400).json({
+                message: "Campo email é obrigatório!"
+            });
+        }
+
+        if(password === null || password === ""){
+            return response.status(400).json({
+                message: "Campo password é obrigatório!"
+            });
+        }
 
         try {
             const user = await User.findOne({ email });
@@ -21,13 +32,12 @@ class AuthController {
             }
 
             if (!user.compare(password)) {
-                return response.status(401).json({
-                    message: "Usuário não autorizado!"
+                return response.status(400).json({
+                    message: "Senha incorreta!"
                 });
             }
 
-            const tkn = jwt.sign({ id: user.id }, SECRET);
-            // { algorithm: "RS256" }
+            const tkn = jwt.sign({ id: user.id }, env.SECRET, { expiresIn: env.TOKEN_EXPIRATION});
 
             return response.status(200).json({
                 token: tkn
@@ -35,7 +45,8 @@ class AuthController {
 
         } catch (error) {
             response.status(500).json({
-                message: "Erro interno no servidor!"
+                message: "Erro interno no servidor!",
+                error: error
             });
 
         }
