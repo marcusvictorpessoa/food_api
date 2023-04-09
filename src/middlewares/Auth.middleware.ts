@@ -1,8 +1,7 @@
 
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-
-const SECRET = process.env.SECRET || "B7B6E15ED1459F578C31B16DD42FD";
+import { env } from "../environment";
 
 class AuthMiddleware {
 
@@ -19,12 +18,30 @@ class AuthMiddleware {
         }
 
         try {
-            const validate = jwt.verify(token, SECRET);
+            jwt.verify(token, env.SECRET);
 
             next();
         } catch (error) {
-            response.status(500).json({
-                message: "Erro interno do servidor!"
+
+            // JsonWebTokenError
+            if(error.name === "JsonWebTokenError"){
+                return response.status(401).json({
+                    message: "token inválido!",
+                    error: error
+                });
+            }
+
+            // TokenExpiredError
+            if(error.name === "TokenExpiredError"){
+                return response.status(400).json({
+                    message: "token expirado!",
+                    error: error
+                });
+            }
+
+            return response.status(500).json({
+                message: "Erro interno do servidor!",
+                error: error
             });
         }
     }
